@@ -28,11 +28,11 @@ well_data=pd.read_excel('gs://well_data_bucket/well_data.xlsx')
 well_data.set_index('date',inplace=True)
 
 
-app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
+_app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 
-app=app.server
+app=_app.server
 
-app.layout=html.Div([
+_app.layout=html.Div([
     
     html.H1(children='Production Surveillance Dashboard',
             
@@ -133,7 +133,7 @@ app.layout=html.Div([
 ])
 
 
-@app.callback(
+@_app.callback(
     
     Output('output-container-dropdown','children'),
     
@@ -1023,7 +1023,7 @@ def update_graph(wells_name,wells_properties,start_date,end_date):
     
 if __name__ == '__main__':
 
-    app.run_server(debug=True)
+    _app.run_server(debug=True)
                    
 
 
