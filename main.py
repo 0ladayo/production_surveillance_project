@@ -23,7 +23,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 
-well_data=pd.read_excel(r'C:\Users\Oladayo\Downloads\well_data.xlsx')
+well_data=pd.read_excel('gs://well_data_bucket/well_data.xlsx')
 
 well_data.set_index('date',inplace=True)
 
