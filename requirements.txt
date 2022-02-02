@@ -1,0 +1,13 @@
+pandas
+
+dash
+
+datetime
+
+dash_bootstrap_components
+
+gcsfs
+
+fsspec
+
+openpyxl
