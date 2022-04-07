@@ -714,6 +714,7 @@ def plot_update(wells_name, wells_properties, start_date, end_date):
     else:
         
         return None
+    
 if __name__ == '__main__':
 
     _app.run_server(debug=True)
