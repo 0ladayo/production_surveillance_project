@@ -27,11 +27,6 @@ well_data=pd.read_excel('gs://dummy-well-data-storage/dummy well data.xlsx')
 
 well_data.set_index('date',inplace=True)
 
-common_style={'font-family':'Open Sans','letter-spacing':'1.5px','color':'white'}
-
-layout_style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}
-
-
 _app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 
 app = _app.server
@@ -42,7 +37,7 @@ _app.layout = html.Div([
         
         html.H1('Production Surveillance Dashboard',
                                        
-                                       style={'textAlign':'center', **common_style}
+                                       style = {'textAlign':'center', 'font-family':'Open Sans','letter-spacing':'1.5px','color':'white'}
                                       
                                       )
                                 
@@ -58,7 +53,7 @@ _app.layout = html.Div([
         
         html.H6('Last Update:' +' ' +(well_data.index[-1].strftime('%d-%b-%Y')),
                                        
-                                       style={'textAlign':'right', 'font-size':'22px',**common_style}
+                                       style={'textAlign':'right', 'font-size':'22px','font-family':'Open Sans','letter-spacing':'1.5px','color':'white'}
                                        
                                        )
                                 
@@ -77,7 +72,7 @@ _app.layout = html.Div([
             
             {'label': i, 'value': i} for i in well_data['wells'].unique()
             
-        ], style={'width':'25%',**common_style,'color':'black'}, placeholder='Select a well')])
+        ], style={'width':'25%','font-family':'Open Sans','letter-spacing':'1.5px','color':'black'}, placeholder='Select a well')])
                      
                      ])
             
@@ -95,7 +90,7 @@ _app.layout = html.Div([
             
             {'label':'Water Cut and Gas Oil Ratio','value':'water cut and gas oil ratio'}
             
-        ], style={'width':'25%',**common_style,'color':'black'}, placeholder='Select well properties')])
+        ], style={'width':'25%','font-family':'Open Sans','letter-spacing':'1.5px','color':'black'}, placeholder='Select well properties')])
                      
                      ])
             
@@ -121,7 +116,7 @@ _app.layout = html.Div([
         ),
         
         
-    ],style={**common_style,'color':'black','font-size':'16px','width':'25%'})
+    ],style={'font-family':'Open Sans','letter-spacing':'1.5px','color':'black','font-size':'16px','width':'25%'})
         
         
     ])
@@ -161,12 +156,14 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
                 
                         value = well_uptime,
                         
-                        label=(f'{uptime_label}'),
+                        label = uptime_label,
                         
                         max=24,
                         
                         min=0),
+                    
                 ])
+                
             ], md = {"size": 3, "offset": 6}),
             
             dbc.Col([
@@ -175,7 +172,7 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
                     
                     daq.GraduatedBar(
                         
-                        label = (f'{choke_size_label}'),
+                        label = (choke_size_label),
                         
                         value = choke_size,
                         
@@ -186,7 +183,7 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
                 
             ],align= 'center', md = 3)
             
-        ], style={**common_style, 'font-size':'20px'}),
+        ], style={'font-family':'Open Sans','letter-spacing':'1.5px','color':'white', 'font-size':'20px'}),
         
         html.Br(),
         
@@ -198,9 +195,9 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
 
                 html.Div([
 
-                    html.H6(f'{heading_1}',
+                    html.H6(heading_1,
 
-                            style={**layout_style}),
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
 
                     html.Br(),
 
@@ -214,9 +211,9 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
 
                 html.Div([
 
-                    html.H6(f'{heading_2}',
+                    html.H6(heading_2,
 
-                            style={ **layout_style}),
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
 
                     html.Br(),
 
@@ -238,9 +235,9 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
 
                 html.Div([
 
-                    html.H6(f'{heading_3}',
+                    html.H6(heading_3,
 
-                            style={**layout_style}),
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
 
                     html.Br(),
 
@@ -254,9 +251,9 @@ def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
 
                 html.Div([
 
-                    html.H6(f'{heading_4}',
+                    html.H6(heading_4,
 
-                            style={**layout_style}),
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
 
                     html.Br(),
 
@@ -290,12 +287,13 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
                 
                         value = well_uptime,
                         
-                        label=(f'{uptime_label}'),
+                        label=uptime_label,
                         
                         max=24,
                         
                         min=0),
                 ])
+                
             ], md = {"size": 3, "offset": 6}),
             
             dbc.Col([
@@ -304,7 +302,7 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
                     
                     daq.GraduatedBar(
                         
-                        label = (f'{choke_size_label}'),
+                        label = choke_size_label,
                         
                         value = choke_size,
                         
@@ -315,7 +313,7 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
                 
             ],align= 'center', md = 3)
             
-        ], style={'height': '6%', **common_style, 'font-size':'20px'}),
+        ], style={'height': '6%','font-family':'Open Sans','letter-spacing':'1.5px','color':'white', 'font-size':'20px'}),
         
         html.Br(),
         
@@ -328,9 +326,9 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
 
                 html.Div([
 
-                    html.H6(f'{heading_1}',
+                    html.H6(heading_1,
 
-                            style={**layout_style}),
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
 
                     html.Br(),
 
@@ -344,9 +342,9 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
 
                 html.Div([
 
-                    html.H6(f'{heading_2}',
+                    html.H6(heading_2,
 
-                            style={ **layout_style}),
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
 
                     html.Br(),
 
@@ -370,9 +368,9 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
     Input('wells dropdown','value'),
     
     Input('wells properties dropdown','value'),
-
+    
     Input('my-date-picker-range','start_date'),
-
+    
     Input('my-date-picker-range','end_date'))
 
 def plot_update(wells_name, wells_properties, start_date, end_date):
@@ -714,6 +712,7 @@ def plot_update(wells_name, wells_properties, start_date, end_date):
     else:
         
         return None
+    
     
 if __name__ == '__main__':
 
