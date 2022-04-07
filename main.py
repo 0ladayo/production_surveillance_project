@@ -23,7 +23,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 
-well_data=pd.read_excel('gs://dummy-well-data-storage/dummy well data.xlsx')
+well_data=pd.read_excel('gs://dummy-well-data/dummy well data.xlsx')
 
 well_data.set_index('date',inplace=True)
 
@@ -361,7 +361,7 @@ def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1,
     return output_2
 
 
-@app.callback(
+@_app.callback(
     
     Output('my-output','children'),
     
