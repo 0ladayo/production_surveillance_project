@@ -10,7 +10,7 @@ import datetime
 
 import plotly.express as px
 
-from jupyter_dash import JupyterDash
+import dash
 
 import numpy
 
@@ -32,9 +32,11 @@ common_style={'font-family':'Open Sans','letter-spacing':'1.5px','color':'white'
 layout_style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}
 
 
-app = JupyterDash(__name__,external_stylesheets=[dbc.themes.DARKLY])
+_app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 
-app.layout = html.Div([
+app = _app.server
+
+_app.layout = html.Div([
     
     dbc.Row([dbc.Col([html.Div([
         
@@ -708,8 +710,14 @@ def plot_update(wells_name, wells_properties, start_date, end_date):
             update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output6
+    
+    else:
         
-app.run_server(port=8549)
+        return None
+if __name__ == '__main__':
+
+    _app.run_server(debug=True)
+
 
 
 # In[ ]:
