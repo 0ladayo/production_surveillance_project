@@ -1,4 +1,4 @@
-# dummy_production_surveillance
+# production_surveillance_project
 
 In this project, I built a production surveillance dashboard from scratch to production to monitor changes in wells parameters using data from the oilfield daily reports.
 
