@@ -18,11 +18,11 @@
 
 #### Plotly 
 
-> plotly library was used for the data visualization 
+> plotly library in python was used for the data visualization 
 
 #### Dash
 
-> dash was used to build the interactive web framework.
+> dash library in python was used to build the interactive web framework.
 
 #### Google App Engine (GAE)
 
