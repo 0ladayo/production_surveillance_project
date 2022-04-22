@@ -6,7 +6,7 @@
 
 #### Google Cloud Storage (GCS)
 
-> google cloud storage was used to store the oilfield daily reports
+> google cloud storage bucket was used to store the oilfield daily reports
 
 #### Pandas
 
@@ -36,4 +36,4 @@
 
 ### Note
 
-> because of data privacy policy, I have replaced the actual wells data and names with randomly generated data
+> because of data privacy policy, the actual wells data and names have been replaced with randomly generated data
