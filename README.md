@@ -36,4 +36,4 @@
 
 ### Note
 
-> because of data privacy policy, the actual wells data and names have been replaced with randomly generated data
+> because of data privacy policy, the actual wells data have been replaced with randomly generated data
