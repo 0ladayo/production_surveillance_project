@@ -37,3 +37,7 @@
 ### Note
 
 > because of data privacy policy, the actual wells data have been replaced with randomly generated data
+
+### Blog
+
+> read more here [Building an Oilfield Production Surveillance Dashboard](https://medium.com/@Oladayo/building-an-oilfield-production-surveillance-dashboard-1629865e2ec9) 
