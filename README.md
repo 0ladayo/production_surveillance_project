@@ -28,9 +28,9 @@
 
 > google app engine was used to deploy the main.py file.
 
-### Final Output
+### Output
 
-> the final output can be see via the link below
+> the output can be see via the link below
 
 > [Production Surveillance Dashboard](https://dummy-surveillance-project.nw.r.appspot.com/) 
 
