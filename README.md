@@ -14,7 +14,7 @@
 
 #### Google Cloud Function (GCF)
 
-> google cloud function was used to deploy the data wrangling.py file. This makes the data wrangling.py function to be event driven in response to a trigger (google cloud storage in this case).
+> google cloud function was used to deploy the data wrangling.py file as a function. This makes the data wrangling.py function to be event driven in response to a trigger (google cloud storage in this case).
 
 #### Plotly 
 
