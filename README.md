@@ -41,3 +41,7 @@
 ### Blog
 
 > read more here [Building an Oilfield Production Surveillance Dashboard](https://medium.com/@Oladayo/building-an-oilfield-production-surveillance-dashboard-1629865e2ec9) 
+
+### License
+
+> see the [License](https://github.com/0ladayo/production_surveillance_project/blob/master/LICENSE.txt) file for license rights and limitations (MIT)
