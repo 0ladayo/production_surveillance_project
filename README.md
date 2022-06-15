@@ -26,7 +26,7 @@
 
 #### Google App Engine (GAE)
 
-> google app engine was used to deploy the main.py file.
+> main.py file was deployed to Google App Engine
 
 ### Output
 
