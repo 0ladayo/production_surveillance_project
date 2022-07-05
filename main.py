@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
+# In[1]:
 
 
 import pandas as pd
@@ -14,103 +14,94 @@ import dash
 
 import numpy
 
-from dash import dcc
+import dash_daq as daq
 
-from dash import html
+from dash import dcc, html
 
 import dash_bootstrap_components as dbc
 
 from dash.dependencies import Input, Output
 
 
-well_data=pd.read_excel(r'C:\Users\Oladayo\Downloads\well_data.xlsx')
+well_data=pd.read_excel('gs://dummy-well-data/dummy well data.xlsx')
 
 well_data.set_index('date',inplace=True)
 
+_app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 
-app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
+app = _app.server
 
-app=app.server
-
-app.layout=html.Div([
+_app.layout = html.Div([
     
-    html.H1(children='Production Surveillance Dashboard',
+    dbc.Row([dbc.Col([html.Div([
+        
+        html.H1('Production Surveillance Dashboard',
+                                       
+                                       style = {'textAlign':'center', 'font-family':'Open Sans','letter-spacing':'1.5px','color':'white'}
+                                      
+                                      )
+                                
+                               ])
+                     
+                     ])
             
-            style={
-                
-                'textAlign': 'center',
-                
-                'color': '#FFFFFF',
-                
-                'font-size': 50
-                
-                
-            }
-           ),
+            ]),
     
     html.Br(),
     
-    html.H6(children='Last Update:'+ ' '+ (well_data.index[-1].strftime('%d-%b-%Y')),
-                
-                style={
-                    
-                    'textAlign': 'right',
-                    
-                    'color':'#FFFFFF',
-                    
-                    'font-size':20
-                
-                }
-               
-               ),
-    
-    html.Br(),
-    
-    html.Label('Select a well'),
-    
-    dcc.Dropdown(
+    dbc.Row([dbc.Col([html.Div([
         
-        id='wells_dropdown',
-        
-        options=[
+        html.H6('Last Update:' +' ' +(well_data.index[-1].strftime('%d-%b-%Y')),
+                                       
+                                       style={'textAlign':'right', 'font-size':'22px','font-family':'Open Sans','letter-spacing':'1.5px','color':'white'}
+                                       
+                                       )
+                                
+                               ])
+                     
+                     ])
             
-            {'label':'OK4ST','value':'OK4ST'},
-            {'label':'OK5ST2','value':'OK5ST2'},
-            {'label':'OK7','value':'OK7'},
-            {'label':'OK9','value':'OK9'},
-            {'label':'OK10','value':'OK10'},
-            {'label':'OK12ST1','value':'OK12ST1'},
-            {'label':'OK14ST','value':'OK14ST'},
-            {'label':'OK16','value':'OK16'},
-            {'label':'OK17','value':'OK17'},
-            {'label':'OK19','value':'OK19'},
-            {'label':'OK20','value':'OK20'},
-            {'label':'OK21','value':'OK21'},
-        
-        ], style={'width':'40%','color':'#000000'}
-        
-    ),
+            ]),
     
     html.Br(),
     
-    html.Label('Select well properties'),
     
-    dcc.Dropdown(
+    dbc.Row([dbc.Col([html.Div([
         
-        id='wells_properties_dropdown',
-        
-        options=[
-            {'label':'Rates','value':'Well_Rates'},
-            {'label':'Pressures','value':'Well_Pressures'},
-            {'label':'Water Cut/GOR','value':'Water_Cut_Gor'},
+        dcc.Dropdown(id='wells dropdown', options=[
             
-        ],style={'width':'40%','color':'#000000'}
-    
-    ),
+            {'label': i, 'value': i} for i in well_data['wells'].unique()
+            
+        ], style={'width':'25%','font-family':'Open Sans','letter-spacing':'1.5px','color':'black'}, placeholder='Select a well')])
+                     
+                     ])
+            
+            ]),
     
     html.Br(),
     
-    dcc.DatePickerRange(
+    dbc.Row([dbc.Col([html.Div([
+        
+        dcc.Dropdown(id='wells properties dropdown', options=[
+            
+            {'label':'Rates and Cumulative','value':'rates and cumulatives'},
+            
+            {'label':'Pressures','value':'pressures'},
+            
+            {'label':'Water Cut and Gas Oil Ratio','value':'water cut and gas oil ratio'}
+            
+        ], style={'width':'25%','font-family':'Open Sans','letter-spacing':'1.5px','color':'black'}, placeholder='Select well properties')])
+                     
+                     ])
+            
+            ]),
+    
+    html.Br(),
+    
+    dbc.Row([dbc.Col([html.Div([
+        
+        
+        dcc.DatePickerRange(
             
             id='my-date-picker-range',
             
@@ -123,897 +114,598 @@ app.layout=html.Div([
             display_format='YYYY-MM-DD'
         
         ),
+        
+        
+    ],style={'font-family':'Open Sans','letter-spacing':'1.5px','color':'black','font-size':'16px','width':'25%'})
+        
+        
+    ])
+        
+        
+    ]),
     
     html.Br(),
     
     html.Br(),
     
-    html.Div(id='output-container-dropdown'),       
+    html.Div(
+        
+        id='my-output'
+                     
+    ),  
     
-])
+], style={'margin':'30px'})
+
+def output_1(well_uptime, uptime_label, choke_size_label, choke_size, heading_1, heading_2, heading_3, heading_4,
+             
+             figure_1, figure_2, figure_3, figure_4):
+    
+    output_1 = html.Div([
+        
+        dbc.Row([
+            
+            dbc.Col([
+                
+                html.Div([
+                    
+                    daq.Gauge(
+                        
+                        showCurrentValue=True,
+                        
+                        units = "Hours",
+                
+                        value = well_uptime,
+                        
+                        label = uptime_label,
+                        
+                        max=24,
+                        
+                        min=0),
+                    
+                ])
+                
+            ], md = {"size": 3, "offset": 6}),
+            
+            dbc.Col([
+                
+                html.Div([
+                    
+                    daq.GraduatedBar(
+                        
+                        label = (choke_size_label),
+                        
+                        value = choke_size,
+                        
+                        step = 2,
+                        
+                        max =192),
+                ])
+                
+            ],align= 'center', md = 3)
+            
+        ], style={'font-family':'Open Sans','letter-spacing':'1.5px','color':'white', 'font-size':'20px'}),
+        
+        html.Br(),
+        
+        html.Br(),
+
+        dbc.Row([
+
+            dbc.Col([
+
+                html.Div([
+
+                    html.H6(heading_1,
+
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
+
+                    html.Br(),
+
+                    dcc.Graph(figure=figure_1)
+
+                ])
+
+            ],md=6),
+
+            dbc.Col([
+
+                html.Div([
+
+                    html.H6(heading_2,
+
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
+
+                    html.Br(),
+
+                    dcc.Graph(figure=figure_2)
+
+                ])
+
+            ],md=6)
+
+        ]),
+        
+        html.Br(),
+        
+        html.Br(),
+
+        dbc.Row([
+
+            dbc.Col([
+
+                html.Div([
+
+                    html.H6(heading_3,
+
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
+
+                    html.Br(),
+
+                    dcc.Graph(figure=figure_3)
+
+                ])
+
+            ],md=6),
+
+            dbc.Col([
+
+                html.Div([
+
+                    html.H6(heading_4,
+
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
+
+                    html.Br(),
+
+                    dcc.Graph(figure=figure_4)
+
+                ])
+
+            ],md=6)
+
+        ])  
+
+    ])
+    
+    return output_1
+
+def output_2(well_uptime, uptime_label, choke_size_label, choke_size, heading_1, heading_2, figure_1, figure_2):
+    
+    output_2=html.Div([
+        
+        dbc.Row([
+            
+            dbc.Col([
+                
+                html.Div([
+                    
+                    daq.Gauge(
+                        
+                        showCurrentValue=True,
+                        
+                        units = "Hours",
+                
+                        value = well_uptime,
+                        
+                        label=uptime_label,
+                        
+                        max=24,
+                        
+                        min=0),
+                ])
+                
+            ], md = {"size": 3, "offset": 6}),
+            
+            dbc.Col([
+                
+                html.Div([
+                    
+                    daq.GraduatedBar(
+                        
+                        label = choke_size_label,
+                        
+                        value = choke_size,
+                        
+                        step = 2,
+                        
+                        max =192),
+                ])
+                
+            ],align= 'center', md = 3)
+            
+        ], style={'height': '6%','font-family':'Open Sans','letter-spacing':'1.5px','color':'white', 'font-size':'20px'}),
+        
+        html.Br(),
+        
+        html.Br(),
 
 
-@app.callback(
-    
-    Output('output-container-dropdown','children'),
-    
-    Input('wells_dropdown','value'),
-    
-    Input('wells_properties_dropdown','value'),
+        dbc.Row([
 
+            dbc.Col([
+
+                html.Div([
+
+                    html.H6(heading_1,
+
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
+
+                    html.Br(),
+
+                    dcc.Graph(figure=figure_1)
+
+                ])
+
+            ],md=6),
+
+            dbc.Col([
+
+                html.Div([
+
+                    html.H6(heading_2,
+
+                            style={'textAlign':'left','color':'white','font-size':'25px','font-family':'Open Sans'}),
+
+                    html.Br(),
+
+                    dcc.Graph(figure=figure_2)
+
+                ])
+
+            ],md=6)
+
+        ])
+        
+    ])
+    
+    return output_2
+
+
+@_app.callback(
+    
+    Output('my-output','children'),
+    
+    Input('wells dropdown','value'),
+    
+    Input('wells properties dropdown','value'),
+    
     Input('my-date-picker-range','start_date'),
-
+    
     Input('my-date-picker-range','end_date'))
 
-def update_graph(wells_name,wells_properties,start_date,end_date):
+def plot_update(wells_name, wells_properties, start_date, end_date):
     
-    well_data_filtered=well_data[well_data['wells']==wells_name]
+    well_data_filter=well_data[well_data['wells']==wells_name]
     
-    well_data_filtered_date=well_data_filtered.loc[start_date:end_date] 
+    well_data_filter_date=well_data_filter.loc[start_date:end_date]
     
-    well_data_filtered_date['cumulative production bbls']=well_data_filtered_date['oil bopd'].cumsum(axis=0)
+    well_data_filter_date['cumulative production bbls']=well_data_filter_date['oil bopd'].cumsum(axis=0)
     
     if wells_name and wells_properties and start_date and end_date is None:
         
         return None
     
-    elif wells_properties=='Well_Rates' and start_date is None and end_date is None:
+    elif wells_properties=='rates and cumulatives' and start_date is None and end_date is None:
         
-        output1=html.Div([
+        output1=output_1(
             
-            dbc.Row([
+            well_uptime = well_data_filter['uptime hrs'].iloc[-1],
             
-                dbc.Col([
-                
-                    html.H6(children='Oil Production Rate',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index, y='oil bopd', color_discrete_sequence=['green']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-                    
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                    
-                        title='<b>'+'Oil Production:'+' '+ str(well_data_filtered['oil bopd'].iloc[-1])+' '+ 'bopd'+ '</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
+            uptime_label = 'Uptime',
             
-                ],md=6),
+            choke_size_label = 'Choke Size:' + ' ' + str(well_data_filter['choke size'].iloc[-1])+'/192' + ' ' + 'inches',
             
-                dbc.Col([
-                
-                    html.H6(children='Gas Production Rate',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='gas mmscfd', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                          
-                        title='<b>'+'Gas Production:'+' '+ str(well_data_filtered['gas mmscfd'].iloc[-1])+' '+ 'mmscfd'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-                
-                ],md=6),
+            choke_size = well_data_filter['choke size'].iloc[-1],
             
-            ],align='center'),
-            
-            html.Br(),
-        
-            html.Br(),
-        
-            dbc.Row([
-            
-                dbc.Col([
-                
-                    html.H6(children='Water Production Rate',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='water bwpd', color_discrete_sequence=['blue']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                            
-                        title='<b>'+'Water Production:'+' '+ str(well_data_filtered['water bwpd'].iloc[-1])+' '+ 'bwpd'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-            
-                ],md=6),
-            
-                dbc.Col([
-                
-                    html.H6(children='Cumulative Production',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='cumulative production bbls', color_discrete_sequence=['green']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-        
-                        title='<b>'+'Cumulative Production :'+' '+str(well_data_filtered['cumulative production bbls'].iloc[-1])+' '+ 'bbls'+'</b>',
-                      
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-            
-                ],md=6),
-        
-            ],align='center')
+            heading_1='Oil Production Rate', 
     
-        ])
+            heading_2='Gas Production Rate', 
+
+            heading_3='Water Production Rate', 
+
+            heading_4='Cumulative Production',
+
+            figure_1=px.line(well_data_filter, y='oil bopd', color_discrete_sequence=['green']
+
+                                                    ).update_layout(
+
+                title='<b>'+'Oil Production:'+' '+ str(well_data_filter['oil bopd'].iloc[-1])+' '+ 'bopd'+ '</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_2=px.line(well_data_filter,y='gas mmscfd', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'Gas Production:'+' '+ str(well_data_filter['gas mmscfd'].iloc[-1])+' '+ 'mmscfd'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_3=px.line(well_data_filter,y='water bwpd', color_discrete_sequence=['blue']
+
+                                     ).update_layout(
+
+              title='<b>'+'Water Production:'+' '+ str(well_data_filter['water bwpd'].iloc[-1])+' '+  'bwpd'+'</b>',
+
+              template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_4=px.line(well_data_filter,y='cumulative production bbls', color_discrete_sequence=['green']
+
+                                     ).update_layout(
+
+                title='<b>'+'Cumulative Production:'+' '+str(well_data_filter['cumulative production bbls'].iloc[-1])+' '+ 'bbls'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output1
     
-    elif wells_properties=='Well_Pressures' and start_date is None and end_date is None:
+    elif wells_properties=='pressures' and start_date is None and end_date is None:
         
-        output2=html.Div([
+        output2=output_1(
             
-            dbc.Row([
+            well_uptime = well_data_filter['uptime hrs'].iloc[-1],
             
-                dbc.Col([
-                
-                    html.H6(children='P*',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index, y='p* psi', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-                    
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                    
-                        title='<b>'+'P*:'+' '+ str(round(well_data_filtered['p* psi'].iloc[-1],2))+' '+ 'psi'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
+            uptime_label = 'Uptime',
             
-                ],md=6),
+            choke_size_label = 'Choke Size:' + ' ' + str(well_data_filter['choke size'].iloc[-1])+'/192' + ' ' + 'inches',
             
-                dbc.Col([
-                
-                    html.H6(children='BHP',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='bhp psi', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                          
-                        title='<b>'+'BHP:'+' '+ str(round(well_data_filtered['bhp psi'].iloc[-1],2))+' '+ 'psi'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-                
-                ],md=6),
+            choke_size = well_data_filter['choke size'].iloc[-1],
             
-            ],align='center'),
-            
-            html.Br(),
-        
-            html.Br(),
-        
-            dbc.Row([
-            
-                dbc.Col([
-                
-                    html.H6(children='FTHP',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='fthp psi', color_discrete_sequence=['red']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                            
-                        title='<b>'+'FTHP:'+' '+ str(round(well_data_filtered['fthp psi'].iloc[-1],2))+' '+ 'psi'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-            
-                ],md=6),
-            
-                dbc.Col([
-                
-                    html.H6(children='Drawdown',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='dp psi', color_discrete_sequence=['red']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-        
-                        title='<b>'+'Drawdown :'+' '+str(round(well_data_filtered['dp psi'].iloc[-1]))+' '+ 'psi'+'</b>',
-                      
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True).update_xaxes(fixedrange=True))
-            
-                ],md=6),
-        
-            ],align='center')
+            heading_1='P*', 
     
-        ])
+            heading_2='BHP', 
+
+            heading_3='THP', 
+
+            heading_4='Drawdown',
+
+            figure_1=px.line(well_data_filter, y='p* psi', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'P*:'+' '+ str(well_data_filter['p* psi'].iloc[-1])+' '+ 'psi'+ '</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_2=px.line(well_data_filter,y='bhp psi', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'BHP:'+' '+ str(well_data_filter['bhp psi'].iloc[-1])+' '+ 'psi'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_3=px.line(well_data_filter,y='thp psi', color_discrete_sequence=['red']
+
+                                     ).update_layout(
+
+              title='<b>'+'THP:'+' '+ str(well_data_filter['thp psi'].iloc[-1])+' '+  'psi'+'</b>',
+
+              template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_4=px.line(well_data_filter,y='dp psi', color_discrete_sequence=['red']
+
+                                     ).update_layout(
+
+                title='<b>'+'Drawdown :'+' '+ str(well_data_filter['dp psi'].iloc[-1])+' '+ 'psi'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output2
     
-    elif wells_properties=='Water_Cut_Gor' and start_date is None and end_date is None:
+    elif wells_properties=='water cut and gas oil ratio' and start_date is None and end_date is None:
         
-        output3=html.Div([
+        output3=output_2(
             
-            dbc.Row([
+            well_uptime = well_data_filter['uptime hrs'].iloc[-1],
             
-                dbc.Col([
-                
-                    html.H6(children='BS&W',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index, y='bs&w %', color_discrete_sequence=['blue']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-                    
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                    
-                        title='<b>'+'BS&W:'+' '+ str(round(well_data_filtered['bs&w %'].iloc[-1],2))+' '+ '%'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(range=[0,100],fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
+            uptime_label = 'Uptime',
             
-                ],md=6),
+            choke_size_label = 'Choke Size:' + ' ' + str(well_data_filter['choke size'].iloc[-1])+'/192' + ' ' + 'inches',
             
-                dbc.Col([
-                
-                    html.H6(children='GOR',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered,x=well_data_filtered.index,y='gor scf/bbl', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                          
-                        title='<b>'+'GOR:'+' '+ str(round(well_data_filtered['gor scf/bbl'].iloc[-1]))+' '+ 'scf/bbl'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-                
-                ],md=6),
+            choke_size = well_data_filter['choke size'].iloc[-1],
             
-            ],align='center')
+            heading_1='BS&W', 
+    
+            heading_2='GOR', 
+
+            figure_1=px.line(well_data_filter, y='bs&w %', color_discrete_sequence=['blue']
+
+                                                    ).update_layout(
+
+                title='<b>'+'BS&W:'+' '+ str(well_data_filter['bs&w %'].iloc[-1])+' '+ '%'+ '</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
             
-        ])
+            update_yaxes(range=[0,100],fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True),
+
+            figure_2=px.line(well_data_filter,y='gor scf/bbl', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'GOR:'+' '+ str(well_data_filter['gor scf/bbl'].iloc[-1])+' '+ 'scf/bbl'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output3
     
-    elif wells_properties=='Well_Rates' and start_date is not None and end_date is not None:
+    elif wells_properties=='rates and cumulatives' and start_date is not None and end_date is not None:
         
-        output4=html.Div([
+        output4=output_1(
             
-            dbc.Row([
+            well_uptime = round(well_data_filter_date['uptime hrs'].mean(),2),
             
-                dbc.Col([
-                
-                    html.H6(children='Oil Production Rate',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,well_data_filtered_date.index, y='oil bopd', color_discrete_sequence=['green']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-                    
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                    
-                        title='<b>'+'Average Oil Production:'+' '+ str(round(well_data_filtered_date['oil bopd'].mean()))+' '+ 'bopd'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
+            uptime_label = 'Average Uptime',
             
-                ],md=6),
+            choke_size_label = 'Choke Size:' + ' ' + str(well_data_filter_date['choke size'].iloc[-1])+'/192' + ' ' + 'inches',
             
-                dbc.Col([
-                
-                    html.H6(children='Gas Production Rate',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='gas mmscfd', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                          
-                        title='<b>'+'Average Gas Production:'+' '+ str(round(well_data_filtered_date['gas mmscfd'].mean(),2))+' '+ 'mmscfd'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-                
-                ],md=6),
+            choke_size = well_data_filter_date['choke size'].iloc[-1],
             
-            ],align='center'),
-            
-            html.Br(),
-        
-            html.Br(),
-        
-            dbc.Row([
-            
-                dbc.Col([
-                
-                    html.H6(children='Water Production Rate',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='water bwpd', color_discrete_sequence=['blue']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                            
-                        title='<b>'+'Average Water Production:'+' '+ str(round(well_data_filtered_date['water bwpd'].mean()))+' '+ 'bwpd'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-            
-                ],md=6),
-            
-                dbc.Col([
-                
-                    html.H6(children='Cumulative Production',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='cumulative production bbls', color_discrete_sequence=['green']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-        
-                        title='<b>'+'Cumulative Production :'+' '+str(well_data_filtered_date['oil bopd'].sum(axis = 0, skipna = True))+' '+ 'bbls'+'</b>',
-                      
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-            
-                ],md=6),
-        
-            ],align='center')
+            heading_1='Oil Production Rate', 
     
-        ])
+            heading_2='Gas Production Rate', 
+
+            heading_3='Water Production Rate', 
+
+            heading_4='Cumulative Production',
+
+            figure_1=px.line(well_data_filter_date, y='oil bopd', color_discrete_sequence=['green']
+
+                                                    ).update_layout(
+
+                title='<b>'+'Average Oil Production:'+' '+ str(round(well_data_filter_date['oil bopd'].mean()))+' '+ 'bopd'+ '</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_2=px.line(well_data_filter_date,y='gas mmscfd', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'Average Gas Production:'+' '+ str(round(well_data_filter_date['gas mmscfd'].mean()))+' '+ 'mmscfd'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_3=px.line(well_data_filter_date,y='water bwpd', color_discrete_sequence=['blue']
+
+                                     ).update_layout(
+
+              title='<b>'+'Average Water Production:'+' '+ str(round(well_data_filter_date['water bwpd'].mean()))+' '+  'bwpd'+'</b>',
+
+              template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_4=px.line(well_data_filter_date,y='cumulative production bbls', color_discrete_sequence=['green']
+
+                                     ).update_layout(
+
+                title='<b>'+'Cumulative Production:'+' '+str(well_data_filter_date['oil bopd'].sum(axis = 0, skipna = True))+' '+ 'bbls'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output4
     
-    elif wells_properties=='Well_Pressures' and start_date is not None and end_date is not None:
+    elif wells_properties=='pressures' and start_date is not None and end_date is not None:
         
-        output5=html.Div([
+        output5=output_1(
             
-            dbc.Row([
+            well_uptime = round(well_data_filter_date['uptime hrs'].mean(),2),
             
-                dbc.Col([
-                
-                    html.H6(children='P*',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date, x=well_data_filtered_date.index, y='p* psi', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-                    
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                    
-                        title='<b>'+'P*:'+' '+ str(round(well_data_filtered_date['p* psi'].iloc[-1],2))+' '+ 'psi'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
+            uptime_label = 'Average Uptime',
             
-                ],md=6),
+            choke_size_label = 'Choke Size:' + ' ' + str(well_data_filter_date['choke size'].iloc[-1])+'/192' + ' ' + 'inches',
             
-                dbc.Col([
-                
-                    html.H6(children='BHP',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='bhp psi', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                          
-                        title='<b>'+'BHP:'+' '+ str(round(well_data_filtered_date['bhp psi'].iloc[-1],2))+' '+ 'psi'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-                
-                ],md=6),
+            choke_size = well_data_filter_date['choke size'].iloc[-1],
             
-            ],align='center'),
-            
-            html.Br(),
-        
-            html.Br(),
-        
-            dbc.Row([
-            
-                dbc.Col([
-                
-                    html.H6(children='FTHP',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='fthp psi', color_discrete_sequence=['red']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                            
-                        title='<b>'+'FTHP:'+' '+ str(round(well_data_filtered_date['fthp psi'].iloc[-1],2))+' '+ 'psi'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-            
-                ],md=6),
-            
-                dbc.Col([
-                
-                    html.H6(children='Drawdown',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='dp psi', color_discrete_sequence=['red']
-                         
-                             ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-        
-                        title='<b>'+'Drawdown :'+' '+str(round(well_data_filtered_date['dp psi'].iloc[-1]))+' '+ 'psi'+'</b>',
-                      
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True).update_xaxes(fixedrange=True))
-            
-                ],md=6),
-        
-            ],align='center')
+            heading_1='P*', 
     
-        ])
+            heading_2='BHP', 
+
+            heading_3='THP', 
+
+            heading_4='Drawdown',
+
+            figure_1=px.line(well_data_filter_date, y='p* psi', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'P*:'+' '+ str(well_data_filter_date['p* psi'].iloc[-1])+' '+ 'psi'+ '</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_2=px.line(well_data_filter_date,y='bhp psi', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'BHP:'+' '+ str(well_data_filter_date['bhp psi'].iloc[-1])+' '+ 'psi'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_3=px.line(well_data_filter,y='thp psi', color_discrete_sequence=['red']
+
+                                     ).update_layout(
+
+              title='<b>'+'THP:'+' '+ str(well_data_filter_date['thp psi'].iloc[-1])+' '+  'psi'+'</b>',
+
+              template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True),
+
+            figure_4=px.line(well_data_filter_date,y='dp psi', color_discrete_sequence=['red']
+
+                                     ).update_layout(
+
+                title='<b>'+'Drawdown:'+' '+ str(well_data_filter_date['dp psi'].iloc[-1])+' '+ 'psi'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output5
     
-    elif wells_properties=='Water_Cut_Gor' and start_date is not None and end_date is not None:
+    elif wells_properties=='water cut and gas oil ratio' and start_date is None and end_date is not None:
         
-        output6=html.Div([
+        output6=output_2(
             
-            dbc.Row([
+            well_uptime = round(well_data_filter_date['uptime hrs'].mean(),2),
             
-                dbc.Col([
-                
-                    html.H6(children='BS&W',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index, y='bs&w %', color_discrete_sequence=['blue']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-                    
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                    
-                        title='<b>'+'BS&W:'+' '+ str(round(well_data_filtered_date['bs&w %'].iloc[-1],2))+' '+ '%'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(range=[0,100],fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
+            uptime_label = 'Average Uptime',
             
-                ],md=6),
+            choke_size_label = 'Choke Size:' + ' ' + str(well_data_filter_date['choke size'].iloc[-1])+'/192' + ' ' + 'inches',
             
-                dbc.Col([
-                
-                    html.H6(children='GOR',
-                        
-                            style={
-                            
-                                'textAlign': 'left',
-                            
-                                'color':'#FFFFFF',
-                            
-                                'font-size':25
-                        
-                            }
-                       
-                           ),
-                
-                    html.Br(),
-                
-                    dcc.Graph(figure=px.line(well_data_filtered_date,x=well_data_filtered_date.index,y='gor scf/bbl', color_discrete_sequence=['red']
-                                         
-                                            ).update_layout(
-                    
-                        template='plotly_dark',
-        
-                        plot_bgcolor='#32383E',
-        
-                        paper_bgcolor='#32383E',
-                          
-                        title='<b>'+'GOR:'+' '+ str(round(well_data_filtered_date['gor scf/bbl'].iloc[-1]))+' '+ 'scf/bbl'+'</b>',
-                            
-                        title_font_color='white',
-        
-                        title_font_size=23,
-                  
-                        title_font_family='Cambria').update_yaxes(fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True))
-                
-                ],md=6),
+            choke_size = well_data_filter_date['choke size'].iloc[-1],
             
-            ],align='center')
+            heading_1='BS&W', 
+    
+            heading_2='GOR', 
+
+            figure_1=px.line(well_data_filter_date, y='bs&w %', color_discrete_sequence=['blue']
+
+                                                    ).update_layout(
+
+                title='<b>'+'BS&W:'+' '+ str(well_data_filter_date['bs&w %'].iloc[-1])+' '+ '%'+ '</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
             
-        ])
+            update_yaxes(range=[0,100], fixedrange=True,rangemode='nonnegative').update_xaxes(fixedrange=True),
+
+            figure_2=px.line(well_data_filter_date,y='gor scf/bbl', color_discrete_sequence=['red']
+
+                                                    ).update_layout(
+
+                title='<b>'+'GOR:'+' '+ str(well_data_filter_date['gor scf/bbl'].iloc[-1])+' '+ 'scf/bbl'+'</b>',
+
+                template='plotly_dark',plot_bgcolor='#32383E',paper_bgcolor='#32383E', title_font_color='white',title_font_size=23,title_font_family='Open Sans').
+            
+            update_yaxes(rangemode='tozero',fixedrange=True).update_xaxes(fixedrange=True))
         
         return output6
     
@@ -1021,10 +713,11 @@ def update_graph(wells_name,wells_properties,start_date,end_date):
         
         return None
     
+    
 if __name__ == '__main__':
 
-    app.run_server(debug=True)
-                   
+    _app.run_server(debug=True)
+
 
 
 # In[ ]:

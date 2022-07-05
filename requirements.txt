@@ -6,8 +6,10 @@ datetime
 
 dash_bootstrap_components
 
+dash_daq
+
 gcsfs
 
-fsspec
-
 openpyxl
+
+xlrd
