@@ -2,6 +2,10 @@
 
 > In this I project, I built an oilfield production surveillance dashboard from scratch to deployment. The dashboard monitors changes in wells parameters using data from the oilfield daily reports.
 
+### Workflow
+
+![](https://github.com/0ladayo/production_surveillance_project/blob/master/Workflow.png)
+
 ### Languages (Libraries) and Tools Used
 
 #### Google Cloud Storage (GCS)
