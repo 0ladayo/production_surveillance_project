@@ -2,9 +2,9 @@
 
 > In this I project, I built an oilfield production surveillance dashboard from scratch to deployment. The dashboard monitors changes in wells parameters using data from the oilfield daily reports.
 
-### Workflow
+### Architecture Diagram
 
-![](https://github.com/0ladayo/production_surveillance_project/blob/master/Workflow.png)
+![](https://github.com/0ladayo/production_surveillance_project/blob/master/workflow.png)
 
 ### Languages (Libraries) and Tools Used
 
