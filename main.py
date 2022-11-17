@@ -12,6 +12,10 @@ import plotly.express as px
 
 import dash
 
+from google.cloud import bigquery
+
+import pandas_gbq
+
 import numpy
 
 import dash_daq as daq
@@ -23,7 +27,11 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 
-well_data=pd.read_excel('gs://dummy-well-data/dummy well data.xlsx')
+client = bigquery.Client()
+
+query_string = "SELECT * FROM `dummy-surveillance-project.ingest_data.production data table` "
+
+well_data  = pandas_gbq.read_gbq(query_string, project_id = 'dummy-surveillance-project')
 
 well_data.set_index('date',inplace=True)
 
