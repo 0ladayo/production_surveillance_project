@@ -46,7 +46,7 @@
 
 > read more here [Building an Oilfield Production Surveillance Dashboard](https://medium.com/@Oladayo/building-an-oilfield-production-surveillance-dashboard-1629865e2ec9) 
 
-> An update here [Update](https://medium.com/@Oladayo/update-fa467c737ad4)
+> Updates here [Update1](https://medium.com/@Oladayo/update-fa467c737ad4) and here [Update2](https://medium.com/@Oladayo/update-2-5b2340158c8c)
 
 ### License
 
