@@ -259,7 +259,7 @@ def dummy_function(event, context):
 
         if list(bq_table_df['wells'].unique()) == []:
 
-            return final_well_data().to_gbq('ingest_data.production data table', if_exists = 'append', 
+            return final_well_data().to_gbq('production_dataset.production data table'', if_exists = 'append', 
 
                                       table_schema = bq_table_schema(), project_id = 'dummy-surveillance-project')
 
@@ -267,7 +267,7 @@ def dummy_function(event, context):
 
             if final_wells_df['date'].unique() not in bq_table_df['date'].unique():
 
-                return final_well_data().to_gbq('production_dataset.production data table', if_exists = 'append', 
+                return final_well_data().to_gbq('production_dataset.production data table'', if_exists = 'append', 
 
                                          table_schema = bq_table_schema(), project_id = 'dummy-surveillance-project')
 
