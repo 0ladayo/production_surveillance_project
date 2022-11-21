@@ -29,7 +29,7 @@ from dash.dependencies import Input, Output
 
 client = bigquery.Client()
 
-query_string = "SELECT * FROM `dummy-surveillance-project.ingest_data.production data table` "
+query_string = "SELECT * FROM `dummy-surveillance-project.production_dataset.production data table` "
 
 well_data  = pandas_gbq.read_gbq(query_string, project_id = 'dummy-surveillance-project')
 
