@@ -4,7 +4,7 @@
 
 ### Architecture Diagram
 
-![](https://github.com/0ladayo/production_surveillance_project/blob/master/workflow.png)
+![](https://github.com/0ladayo/production_surveillance_project/blob/master/Architecture%20Diagram.jpg)
 
 ### Languages (Libraries) and Tools Used
 
