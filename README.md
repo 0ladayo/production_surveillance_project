@@ -38,6 +38,8 @@
 
 > [Production Surveillance Dashboard](https://dummy-surveillance-project.nw.r.appspot.com/) 
 
+![](https://github.com/0ladayo/production_surveillance_project/blob/master/web%20app.jpg)
+
 ### Note
 
 > because of data privacy policy, the actual wells data have been replaced with randomly generated data
